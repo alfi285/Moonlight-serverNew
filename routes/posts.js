@@ -2,14 +2,14 @@ const Post = require('../models/Post');
 const User = require('../models/User');
 const router = require('express').Router();
 const verifyToken = require("../middleware/verifyToken");
-const upload = require("../middleware/upload"); // ✅ Multer middleware
+const upload = require("../middleware/upload"); // Multer middleware
 
-// ✅ Create post with image upload
+//  Create post with image upload
 router.post("/", verifyToken, upload.single('img'), async (req, res) => {
   const newPost = new Post({
     userId: req.user.id,
     desc: req.body.desc,
-    img: req.file ? req.file.filename : "", // ✅ Save only the image filename
+    img: req.file ? req.file.filename : "", //  Save only the image filename
   });
 
   try {
@@ -20,7 +20,7 @@ router.post("/", verifyToken, upload.single('img'), async (req, res) => {
   }
 });
 
-// ✅ Update post
+//  Update post
 router.put("/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -35,7 +35,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// ✅ Delete post
+// Delete post
 router.delete("/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -50,7 +50,7 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-// ✅ Like / Dislike post
+// Like / Dislike post
 router.put("/:id/like", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -66,7 +66,7 @@ router.put("/:id/like", async (req, res) => {
   }
 });
 
-// ✅ Get a post by ID
+// Get a post by ID
 router.get("/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -76,7 +76,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// ✅ Get timeline posts (newest first)
+// Get timeline posts (newest first)
 router.get("/timeline/all", async (req, res) => {
   try {
     const currentUser = await User.findById(req.query.userId);
@@ -92,7 +92,7 @@ router.get("/timeline/all", async (req, res) => {
   }
 });
 
-// ✅ Add comment to a post
+// Add comment to a post
 router.post("/:id/comment", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -109,7 +109,7 @@ router.post("/:id/comment", async (req, res) => {
   }
 });
 
-// ✅ Get all posts by a user (profile) - newest first
+// Get all posts by a user (profile) - newest first
 router.get("/profile/:username", async (req, res) => {
   try {
     const user = await User.findOne({ username: req.params.username });

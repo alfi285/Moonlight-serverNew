@@ -3,7 +3,7 @@ const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-// ✅ Register with duplicate check
+//  Register with duplicate check
 router.post('/register', async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -37,7 +37,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// ✅ Login with JWT
+// Login with JWT
 router.post('/login', async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });

@@ -3,7 +3,7 @@ const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const verifyToken = require("../middleware/verifyToken"); // 
 
-// ✅ UPDATE user
+// UPDATE user
 router.put("/:id", async (req, res) => {
   if (req.body.userId === req.params.id || req.user?.isAdmin) {
     if (req.body.password) {
@@ -28,7 +28,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// ✅ DELETE user
+//  DELETE user
 router.delete("/:id", async (req, res) => {
   if (req.body.userId === req.params.id || req.user?.isAdmin) {
     try {
@@ -42,7 +42,7 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-// ✅ GET a user by ID or username
+// GET a user by ID or username
 router.get("/", async (req, res) => {
   const { username, userId } = req.query;
   try {
@@ -58,7 +58,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// ✅ GET a user by ID only (e.g., /api/users/123)
+// GET a user by ID only (e.g., /api/users/123)
 router.get("/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -69,7 +69,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// ✅ FOLLOW a user
+//  FOLLOW a user
 router.put("/:id/follow", async (req, res) => {
   if (req.body.userId !== req.params.id) {
     try {
@@ -91,7 +91,7 @@ router.put("/:id/follow", async (req, res) => {
   }
 });
 
-// ✅ UNFOLLOW a user
+//  UNFOLLOW a user
 router.put("/:id/unfollow", async (req, res) => {
   if (req.body.userId !== req.params.id) {
     try {
@@ -113,7 +113,7 @@ router.put("/:id/unfollow", async (req, res) => {
   }
 });
 
-// ✅ In your user route file (e.g. users.js)
+//  In your user route file (e.g. users.js)
 router.get("/suggestions", verifyToken, async (req, res) => {
   try {
     console.log("🔐 Authenticated user:", req.user);
