@@ -85,7 +85,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // ✅ 6. FOLLOW a user
-router.put("/:id/follow", async (req, res) => {
+router.put("/:id/follow",verifyToken, async (req, res) => {
   if (req.body.userId !== req.params.id) {
     try {
       const user = await User.findById(req.params.id);
@@ -107,7 +107,7 @@ router.put("/:id/follow", async (req, res) => {
 });
 
 // ✅ 7. UNFOLLOW a user
-router.put("/:id/unfollow", async (req, res) => {
+router.put("/:id/unfollow",verifyToken, async (req, res) => {
   if (req.body.userId !== req.params.id) {
     try {
       const user = await User.findById(req.params.id);
