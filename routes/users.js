@@ -116,13 +116,10 @@ router.put("/:id/unfollow", async (req, res) => {
 //  In your user route file (e.g. users.js)
 router.get("/suggestions", verifyToken, async (req, res) => {
   try {
-    console.log("🔐 Authenticated user:", req.user);
     const currentUser = await User.findById(req.user.id);
-    if (!currentUser) return res.status(404).json("User not found");
-
     const users = await User.find({
       _id: { $nin: [...currentUser.followings, req.user.id] },
-    }).select("-password").limit(5);
+    }).select("-password").limit(20);
 
     res.status(200).json(users);
   } catch (err) {

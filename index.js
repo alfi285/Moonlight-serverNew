@@ -9,7 +9,6 @@ const authRoute = require('./routes/auth');
 const postRoute = require('./routes/posts');
 const uploadRoute = require('./routes/upload');
 const userRoute = require('./routes/users');
-const suggestionsRoute = require('./routes/users/suggestions');
 
 dotenv.config();
 
@@ -51,7 +50,7 @@ app.use("/api/auth", authRoute);
 app.use("/api/posts", postRoute);
 app.use("/api/upload", uploadRoute);
 app.use("/api/users", userRoute);
-app.use("/api/suggestions", suggestionsRoute);
+
 
 // ✅ Server Listener
 app.listen(PORT, () => {
