@@ -1,9 +1,9 @@
 const router = require('express').Router();
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
-const verifyToken = require("../middleware/verifyToken"); // 
+const verifyToken = require("../middleware/verifyToken");
 
-// UPDATE user
+// ✅ 1. UPDATE user
 router.put("/:id", async (req, res) => {
   if (req.body.userId === req.params.id || req.user?.isAdmin) {
     if (req.body.password) {
@@ -28,7 +28,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-//  DELETE user
+// ✅ 2. DELETE user
 router.delete("/:id", async (req, res) => {
   if (req.body.userId === req.params.id || req.user?.isAdmin) {
     try {
@@ -42,7 +42,7 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-// GET a user by ID or username
+// ✅ 3. GET user by username or userId (query params)
 router.get("/", async (req, res) => {
   const { username, userId } = req.query;
   try {
@@ -58,7 +58,22 @@ router.get("/", async (req, res) => {
   }
 });
 
-// GET a user by ID only (e.g., /api/users/123)
+// ✅ 4. SUGGESTIONS route (must come BEFORE "/:id")
+router.get("/suggestions", verifyToken, async (req, res) => {
+  try {
+    const currentUser = await User.findById(req.user.id);
+    const users = await User.find({
+      _id: { $nin: [...currentUser.followings, req.user.id] },
+    }).select("-password").limit(20);
+
+    res.status(200).json(users);
+  } catch (err) {
+    console.error("❌ Suggestion fetch failed:", err.message);
+    res.status(500).json("Server Error");
+  }
+});
+
+// ✅ 5. GET user by ID ("/:id" must come AFTER /suggestions)
 router.get("/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -69,12 +84,12 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-//  FOLLOW a user
+// ✅ 6. FOLLOW a user
 router.put("/:id/follow", async (req, res) => {
   if (req.body.userId !== req.params.id) {
     try {
-      const user = await User.findById(req.params.id); // person to be followed
-      const currentUser = await User.findById(req.body.userId); // person who follows
+      const user = await User.findById(req.params.id);
+      const currentUser = await User.findById(req.body.userId);
 
       if (!user.followers.includes(req.body.userId)) {
         await user.updateOne({ $push: { followers: req.body.userId } });
@@ -91,12 +106,12 @@ router.put("/:id/follow", async (req, res) => {
   }
 });
 
-//  UNFOLLOW a user
+// ✅ 7. UNFOLLOW a user
 router.put("/:id/unfollow", async (req, res) => {
   if (req.body.userId !== req.params.id) {
     try {
-      const user = await User.findById(req.params.id); // person to be unfollowed
-      const currentUser = await User.findById(req.body.userId); // person who unfollows
+      const user = await User.findById(req.params.id);
+      const currentUser = await User.findById(req.body.userId);
 
       if (user.followers.includes(req.body.userId)) {
         await user.updateOne({ $pull: { followers: req.body.userId } });
@@ -112,22 +127,5 @@ router.put("/:id/unfollow", async (req, res) => {
     res.status(403).json("You can't unfollow yourself");
   }
 });
-
-//  In your user route file (e.g. users.js)
-router.get("/suggestions", verifyToken, async (req, res) => {
-  try {
-    const currentUser = await User.findById(req.user.id);
-    const users = await User.find({
-      _id: { $nin: [...currentUser.followings, req.user.id] },
-    }).select("-password").limit(20);
-
-    res.status(200).json(users);
-  } catch (err) {
-    console.error("❌ Suggestion fetch failed:", err.message);
-    res.status(500).json("Server Error");
-  }
-});
-
-
 
 module.exports = router;
