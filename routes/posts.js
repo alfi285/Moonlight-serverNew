@@ -76,21 +76,32 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// Get timeline posts (newest first)
 router.get("/timeline/all", async (req, res) => {
+  const { userId } = req.query;
+
+  if (!userId) {
+    return res.status(400).json({ message: "User ID required in query." });
+  }
+
   try {
-    const currentUser = await User.findById(req.query.userId);
-    const userPosts = await Post.find({ userId: currentUser._id }).sort({ createdAt: -1 });
+    const currentUser = await User.findById(userId);
+    if (!currentUser) return res.status(404).json({ message: "User not found" });
+
+    const userPosts = await Post.find({ userId }).sort({ createdAt: -1 });
+
     const friendPosts = await Promise.all(
-      currentUser.followings.map((friendId) => {
-        return Post.find({ userId: friendId }).sort({ createdAt: -1 });
-      })
+      currentUser.followings.map((friendId) =>
+        Post.find({ userId: friendId }).sort({ createdAt: -1 })
+      )
     );
+
     res.status(200).json(userPosts.concat(...friendPosts));
   } catch (err) {
-    res.status(500).json(err);
+    console.error("Timeline fetch error:", err);
+    res.status(500).json({ message: "Server error fetching timeline" });
   }
 });
+
 
 // Add comment to a post
 router.post("/:id/comment", async (req, res) => {
